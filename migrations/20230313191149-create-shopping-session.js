@@ -1,5 +1,9 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
+
+const db = require('../models');
+const User = db.User;
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Shopping_Sessions', {
