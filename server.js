@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const colors = require('colors');
-const database = require('./database');
+const database = require('./src/database');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -15,8 +15,8 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Routes
-app.use(paths.index, require('./routes/index'));
-app.use(paths.auth,  require('./routes/auth'));
+app.use(paths.index, require('./src/routes/index'));
+app.use(paths.auth,  require('./src/routes/auth'));
 
 // 404 Error
 app.get('*', (req, res) => {
