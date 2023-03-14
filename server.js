@@ -1,14 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const colors = require('colors');
-const database = require('./src/database');
+const database = require('./database');
 
 const app = express();
 const port = process.env.PORT || 5000;
 const paths = {
     index: '/',
     auth: '/auth',
-    users: '/users'
+    users: '/users',
+    shoppingSession: '/shoppingsession'
 };
 
 app.use(cors());
@@ -16,9 +17,10 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Routes
-app.use(paths.index, require('./src/routes/index'));
-app.use(paths.auth, require('./src/routes/auth'));
-app.use(paths.users, require('./src/routes/user'));
+app.use(paths.index, require('./routes/index'));
+app.use(paths.auth, require('./routes/auth'));
+app.use(paths.users, require('./routes/user'));
+app.use(paths.shoppingSession, require('./routes/shopping_session'));
 
 // 404 Error
 app.get('*', (req, res) => {
