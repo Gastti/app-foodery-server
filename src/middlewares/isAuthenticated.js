@@ -10,9 +10,9 @@ async function isAuthenticated(req, res, next) {
 
         token = token.split(' ')[1];
 
-        const { id } = jwt.verify(token, config.SECRET_KEY);
-
-        req.authenticatedUser = await User.findOne({ where: { id } })
+        const { user_id } = jwt.verify(token, config.SECRET_KEY);
+        const user = await User.findByPk(user_id)
+        req.authenticatedUser = { user_id: user.id }
         if (!req.authenticatedUser) return newResponse(res, 404, 'Invalid token');
 
         next();
