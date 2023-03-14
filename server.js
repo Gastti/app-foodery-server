@@ -7,7 +7,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 const paths = {
     index: '/',
-    auth: '/auth'
+    auth: '/auth',
+    users: '/users'
 };
 
 app.use(cors());
@@ -16,7 +17,8 @@ app.use(express.static('public'));
 
 // Routes
 app.use(paths.index, require('./src/routes/index'));
-app.use(paths.auth,  require('./src/routes/auth'));
+app.use(paths.auth, require('./src/routes/auth'));
+app.use(paths.users, require('./src/routes/user'));
 
 // 404 Error
 app.get('*', (req, res) => {
