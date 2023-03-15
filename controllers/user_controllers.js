@@ -1,5 +1,5 @@
 const User = require("../models").User;
-const Shopping_Session = require("../models").Shopping_Session;
+const Cart = require("../models").Cart;
 const { newResponse } = require("../utils/newResponse");
 
 async function getUserInformation(req, res) {
@@ -7,8 +7,8 @@ async function getUserInformation(req, res) {
     const user = await User.findByPk(user_id, {
         attributes: { exclude: ['password', 'deletedAt', 'createdAt', 'updatedAt'] },
         include: {
-            model: Shopping_Session,
-            as: 'shopping_session',
+            model: Cart,
+            as: 'cart',
             attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] }
         }
     });

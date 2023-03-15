@@ -9,7 +9,7 @@ const paths = {
     index: '/',
     auth: '/auth',
     users: '/users',
-    shoppingSession: '/shoppingsession'
+    cart: '/cart'
 };
 
 app.use(cors());
@@ -20,7 +20,7 @@ app.use(express.static('public'));
 app.use(paths.index, require('./routes/index'));
 app.use(paths.auth, require('./routes/auth'));
 app.use(paths.users, require('./routes/user'));
-app.use(paths.shoppingSession, require('./routes/shopping_session'));
+app.use(paths.cart, require('./routes/cart'));
 
 // 404 Error
 app.get('*', (req, res) => {
@@ -30,21 +30,21 @@ app.get('*', (req, res) => {
     });
 });
 
-
 // Test Database Connection
 async function testDatabaseConnection() {
     try {
         await database.authenticate();
+        await database.sync({ alter: true });
         console.log(`-- ${'Database:'.green} Connection has been established successfully.`);
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
-}
+};
 
 function listen() {
     app.listen(port, () => {
         console.log(`-- ${'Server:'.green} Connection has been established successfully. ${'Port:'.green} ${port.yellow}`);
     });
-}
+};
 
-module.exports = { testDatabaseConnection, listen }
+module.exports = { testDatabaseConnection, listen };

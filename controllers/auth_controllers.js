@@ -1,7 +1,7 @@
 const User = require("../models").User;
 const bcryptjs = require("bcryptjs");
 const { newResponse } = require("../utils/newResponse");
-const { generateShoppingSession } = require("./shopping_session_controllers");
+const { generateCart } = require("./cart_controllers");
 const generateToken = require("../helpers/jsonwebtoken");
 
 async function register(req, res) {
@@ -42,11 +42,11 @@ async function login(req, res) {
         if (!validPassword) return newResponse(res, 404, 'Invalid password')
 
         // Generate Shopping Session only the First Time
-        const shoppingSession = await generateShoppingSession(user.id);
+        const shoppingSession = await generateCart(user.id);
 
         // Generate and Send Token
-        const token = await generateToken(user.id, shoppingSession);
-        return newResponse(res, 200, 'Logged in.', { token, shoppingSession });
+        const token = await generateToken(user.id, shoppingSession.id);
+        return newResponse(res, 200, 'Logged in.', { token, cart_id: shoppingSession });
 
     } catch (error) {
         console.log(error);
