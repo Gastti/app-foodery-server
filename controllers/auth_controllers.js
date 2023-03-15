@@ -42,11 +42,11 @@ async function login(req, res) {
         if (!validPassword) return newResponse(res, 404, 'Invalid password')
 
         // Generate Shopping Session only the First Time
-        const shoppingSession = await generateCart(user.id);
+        const cart = await generateCart(user.id);
 
         // Generate and Send Token
-        const token = await generateToken(user.id, shoppingSession.id);
-        return newResponse(res, 200, 'Logged in.', { token, cart_id: shoppingSession });
+        const token = await generateToken(user.id, cart.id);
+        return newResponse(res, 200, 'Logged in.', { token, cart_id: cart.id });
 
     } catch (error) {
         console.log(error);

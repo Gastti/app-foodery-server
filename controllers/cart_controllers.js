@@ -11,7 +11,7 @@ async function generateCart(user_id) {
             ? findCart
             : await Cart.create({ user_id, total: 0 });
 
-        return newCart.id;
+        return newCart;
     } catch (error) {
         console.log(error);
         return null
@@ -41,6 +41,8 @@ async function getCart(req, res) {
     });
 
     if (!cart) return newResponse(res, 404, "Can't find this cart");
+
+    cart.total = cart.cart_items.length;
 
     return newResponse(res, 200, 'Cart found', cart);
 }
