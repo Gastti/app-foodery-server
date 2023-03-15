@@ -4,7 +4,7 @@ const { addToCart, removeFromCart } = require("../controllers/item_cart_controll
 const { isAuthenticated, validateFields } = require("../middlewares");
 const router = Router();
 
-router.get("/", [
+router.get('/', [
     isAuthenticated,
     validateFields
 ], getCart);

@@ -9,7 +9,8 @@ const paths = {
     index: '/',
     auth: '/auth',
     users: '/users',
-    cart: '/cart'
+    cart: '/cart',
+    products: '/products'
 };
 
 app.use(cors());
@@ -21,6 +22,7 @@ app.use(paths.index, require('./routes/index'));
 app.use(paths.auth, require('./routes/auth'));
 app.use(paths.users, require('./routes/user'));
 app.use(paths.cart, require('./routes/cart'));
+app.use(paths.products, require('./routes/product'));
 
 // 404 Error
 app.get('*', (req, res) => {
