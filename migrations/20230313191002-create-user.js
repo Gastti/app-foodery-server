@@ -26,9 +26,8 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
-      telephone: {
-        type: Sequelize.INTEGER,
-        unique: true
+      image: {
+        type: Sequelize.STRING
       },
       deletedAt: {
         type: Sequelize.DATE
