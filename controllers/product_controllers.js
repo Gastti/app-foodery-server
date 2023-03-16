@@ -4,9 +4,11 @@ const { newResponse } = require("../utils/newResponse");
 
 async function getProducts(req, res) {
     try {
-        const page = req.query.page || 1;
-        const limit = req.query.limit || 10;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
+
+        console.log(page, limit);
 
         const products = await Product.findAndCountAll({
             limit,
@@ -17,8 +19,8 @@ async function getProducts(req, res) {
         const totalPages = Math.ceil(totalProducts / limit);
 
         const response = {
-            products: products.rows,
             total: totalProducts,
+            products: products.rows,
             pages: {
                 current: page,
                 total: totalPages,
@@ -34,31 +36,43 @@ async function getProducts(req, res) {
 
 async function getProductsByQuery(req, res) {
     try {
-        const { category, name } = req.query;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
 
-        if (name) {
-            const products = await Product.findAll({
-                where: {
-                    name: {
-                        [Op.like]: `%${name}%`
-                    }
-                }
-            })
-            return newResponse(res, 200, 'Products found', products);
-        }
+        const { category, name } = req.query || '';
+        const query = name && name.length >= 1 ? name : category && category.length >= 1 ? category : '';
 
-        if (category) {
-            const products = await Product.findAll({
-                where: {
-                    category: {
-                        [Op.like]: `%${category}%`
-                    }
-                }
-            })
-            return newResponse(res, 200, 'Products found', products);
-        }
+        if (query.length <= 0) return newResponse(res, 400, 'No search parameters have been sent')
 
-        return newResponse(res, 404, 'Category/Product does not exist');
+        const products = await Product.findAndCountAll({
+            limit,
+            offset,
+            where: {
+                [Op.or]: [
+                    { name: { [Op.like]: `%${query}%` } },
+                    { category: { [Op.like]: `%${query}%` } }
+                ]
+            }
+        })
+
+        const totalProducts = products.count;
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const response = {
+            total: totalProducts,
+            products: products.rows,
+            pages: {
+                current: page,
+                total: totalPages,
+            }
+        };
+        return response.total >= 1
+            ? newResponse(res, 200, 'Products found', response)
+            : newResponse(res, 404, 'Products not found')
+
+
+
     } catch (error) {
         console.log(error);
         return newResponse(res, 500, 'Server side error');
