@@ -9,7 +9,7 @@ async function getUserInformation(req, res) {
     });
     
     if (!user) return newResponse(res, 400, "Can't find user");
-    console.log(req.authenticatedUser);
+
     return newResponse(res, 200, "User finded", user);
 }
 

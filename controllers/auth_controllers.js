@@ -8,7 +8,7 @@ async function register(req, res) {
     try {
         let {
             first_name, last_name, username,
-            email, password, telephone
+            email, password
         } = req.body;
 
         // Encrypt Password 
@@ -17,7 +17,7 @@ async function register(req, res) {
 
         await User.create({
             first_name, last_name, username,
-            email, password, telephone
+            email, password, role_id: 4
         });
 
         return newResponse(res, 200, 'The user has been registered');
@@ -31,7 +31,7 @@ async function register(req, res) {
 async function login(req, res) {
     try {
         const { email, username, password } = req.body;
-
+        console.log(username);
         let user;
         if (email) user = await User.findOne({ where: { email } });
         if (username) user = await User.findOne({ where: { username } });

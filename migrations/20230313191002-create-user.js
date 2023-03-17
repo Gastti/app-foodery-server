@@ -29,6 +29,9 @@ module.exports = {
       image: {
         type: Sequelize.STRING
       },
+      role_id: {
+        type: Sequelize.INTEGER
+      },
       deletedAt: {
         type: Sequelize.DATE
       },
