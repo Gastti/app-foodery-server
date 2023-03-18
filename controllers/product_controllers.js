@@ -28,6 +28,7 @@ async function getProducts(req, res) {
         };
 
         return newResponse(res, 200, 'Products found', response);
+
     } catch (error) {
         console.log(error);
         return newResponse(res, 500, 'Server side error');
@@ -67,11 +68,31 @@ async function getProductsByQuery(req, res) {
                 total: totalPages,
             }
         };
+
         return response.total >= 1
             ? newResponse(res, 200, 'Products found', response)
             : newResponse(res, 404, 'Products not found')
 
+    } catch (error) {
+        console.log(error);
+        return newResponse(res, 500, 'Server side error');
+    }
+}
 
+async function addProduct() {
+    try {
+        const { name, desc, SKU, category, price, discount_id } = req.body;
+
+        const newProduct = await Product.create({
+            name,
+            desc,
+            SKU,
+            category,
+            price,
+            discount_id: discount_id || 0
+        });
+
+        return newResponse(res, 200, 'Product added', newProduct)
 
     } catch (error) {
         console.log(error);
@@ -81,5 +102,6 @@ async function getProductsByQuery(req, res) {
 
 module.exports = {
     getProducts,
-    getProductsByQuery
+    getProductsByQuery,
+    addProduct
 }
