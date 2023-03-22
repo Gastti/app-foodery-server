@@ -1,6 +1,7 @@
-const { Op } = require('sequelize');
+const { Op } = require("sequelize");
 const { Product } = require("../models");
 const { newResponse } = require("../utils/newResponse");
+const { uploadFile } = require("../services/aws-s3");
 
 async function getProducts(req, res) {
     try {
@@ -79,17 +80,27 @@ async function getProductsByQuery(req, res) {
     }
 }
 
-async function addProduct() {
+async function addProduct(req, res) {
     try {
         const { name, desc, SKU, category, price, discount_id } = req.body;
+        const { image } = req.files;
+
+        const findProduct = await Product.findOne({
+            where: {
+                [Op.or]: [
+                    { name: { [Op.like]: name } },
+                    { SKU: { [Op.like]: SKU } }
+                ]
+            }
+        })
+
+        if (findProduct) return newResponse(res, 400, 'A product with this name or SKU already exists')
+
+        const image_url = await uploadFile(image);
 
         const newProduct = await Product.create({
-            name,
-            desc,
-            SKU,
-            category,
-            price,
-            discount_id: discount_id || 0
+            name, desc, SKU, category, price,
+            image: image_url, discount_id
         });
 
         return newResponse(res, 200, 'Product added', newProduct)
