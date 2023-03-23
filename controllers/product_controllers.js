@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Product } = require("../models");
 const { newResponse } = require("../utils/newResponse");
 const { uploadFile } = require("../services/aws-s3");
+const { validateFiles } = require("../middlewares/validateFiles");
 
 async function getProducts(req, res) {
     try {
@@ -111,8 +112,51 @@ async function addProduct(req, res) {
     }
 }
 
+async function editProduct(req, res) {
+    try {
+        const { id } = req.params;
+        const { name, desc, SKU, category, price, discount_id } = req.body;
+        const image = req.files ? req.files.image : null;
+
+        const editableProduct = await Product.findByPk(id);
+        const compareProduct = await Product.findOne({
+            where: {
+                [Op.or]: [
+                    { name: { [Op.like]: name } },
+                    { SKU: { [Op.like]: SKU } }
+                ]
+            }
+        })
+
+        if (!editableProduct) {
+            return newResponse(res, 400, 'This product does not exist.')
+        }
+
+        if (compareProduct.id != id) {
+            return newResponse(res, 400, 'A product with this name or SKU already exists')
+        }
+
+        if (name) editableProduct.name = name;
+        if (desc) editableProduct.desc = desc;
+        if (SKU) editableProduct.SKU = SKU;
+        if (category) editableProduct.category = category;
+        if (price) editableProduct.price = price;
+        if (discount_id) editableProduct.discount_id = discount_id;
+        if (image) editableProduct.image = await uploadFile(image);
+
+
+        editableProduct.save();
+
+        return newResponse(res, 200, 'Product updated.')
+    } catch (error) {
+        console.log(error);
+        return newResponse(res, 500, 'Server side error');
+    }
+}
+
 module.exports = {
     getProducts,
     getProductsByQuery,
-    addProduct
+    addProduct,
+    editProduct
 }

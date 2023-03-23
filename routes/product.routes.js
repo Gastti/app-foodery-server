@@ -1,8 +1,9 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const { isAuthenticated, validateFields } = require('../middlewares');
-const { getProducts, getProductsByQuery, addProduct } = require('../controllers/product_controllers');
-const { validateFilesCurried } = require('../middlewares/validateFiles');
+const { getProducts, getProductsByQuery, addProduct, editProduct } = require('../controllers/product_controllers');
+const { validateFiles } = require('../middlewares/validateFiles');
+const { hasPermissions } = require('../middlewares/hasPermissions');
 const router = Router();
 
 router.get('/', [
@@ -28,8 +29,16 @@ router.post('/add', [
         .isString().withMessage('The field must be a string')
         .trim()
         .escape(),
-    validateFilesCurried('image', ["png", "jpeg", "jpg", "gif"]),
+    validateFiles('image', ["png", "jpeg", "jpg", "gif"]),
+    hasPermissions('manager'),
     validateFields
 ], addProduct)
+
+router.put('/edit/:id', [
+    isAuthenticated,
+    // validateFiles('image', ["png", "jpeg", "jpg", "gif"]),
+    hasPermissions('manager'),
+    validateFields
+], editProduct)
 
 module.exports = router;

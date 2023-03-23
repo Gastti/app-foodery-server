@@ -17,10 +17,12 @@ module.exports = (sequelize, DataTypes) => {
   Product.init({
     name: DataTypes.STRING,
     desc: DataTypes.STRING,
+    image: DataTypes.STRING,
     SKU: DataTypes.STRING,
     category: DataTypes.STRING,
     price: DataTypes.DECIMAL,
     discount_id: DataTypes.INTEGER,
+    active: DataTypes.BOOLEAN,
     deletedAt: DataTypes.DATE
   }, {
     sequelize,

@@ -15,6 +15,9 @@ module.exports = {
       desc: {
         type: Sequelize.STRING
       },
+      image: {
+        type: Sequelize.STRING
+      },
       SKU: {
         type: Sequelize.STRING,
         unique: true
@@ -27,6 +30,9 @@ module.exports = {
       },
       discount_id: {
         type: Sequelize.INTEGER
+      },
+      active: {
+        type: Sequelize.BOOLEAN
       },
       deletedAt: {
         type: Sequelize.DATE
