@@ -1,20 +1,24 @@
-function validateFilesCurried(param, allowedExtensions = []) {
+function validateFilesCurried(param, allowedExtensions = [], required = true) {
     return function (req, res, next) {
         if (!req.files || Object.keys(req.files).length === 0) {
-            return res.status(400).json({
-                errors: [
-                    {
-                        msg: `The ${param} is required.`,
-                        param,
-                        location: 'files'
-                    }
-                ]
-            })
+            if (required) {
+                return res.status(400).json({
+                    errors: [
+                        {
+                            msg: `The ${param} is required.`,
+                            param,
+                            location: 'files'
+                        }
+                    ]
+                })
+            }
         }
 
-        const extension = req.files[param].name.split('.')[req.files[param].name.split('.').length - 1];
+        const extension = req.files
+            ? req.files[param].name.split('.')[req.files[param].name.split('.').length - 1]
+            : null;
 
-        if (!allowedExtensions.includes(extension)) {
+        if (req.files && !allowedExtensions.includes(extension)) {
             return res.status(400).json({
                 errors: [
                     {
