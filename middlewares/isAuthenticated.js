@@ -14,7 +14,7 @@ async function isAuthenticated(req, res, next) {
         const user = await User.findByPk(user_id);
         if (!user) return newResponse(res, 404, 'Invalid Token');
 
-        req.authenticatedUser = { user_id: user.id, cart_id };
+        req.authenticatedUser = { user_id: user.id, cart_id, role_id: user.role_id };
         if (!req.authenticatedUser) return newResponse(res, 404, 'Invalid Token');
 
         next();
