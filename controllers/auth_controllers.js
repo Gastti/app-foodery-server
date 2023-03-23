@@ -31,7 +31,7 @@ async function register(req, res) {
 async function login(req, res) {
     try {
         const { email, username, password } = req.body;
-        console.log(username);
+
         let user;
         if (email) user = await User.findOne({ where: { email } });
         if (username) user = await User.findOne({ where: { username } });
@@ -46,7 +46,7 @@ async function login(req, res) {
 
         // Generate and Send Token
         const token = await generateToken(user.id, cart.id);
-        return newResponse(res, 200, 'Logged in.', { token, cart_id: cart.id });
+        return newResponse(res, 200, 'Logged in.', { token });
 
     } catch (error) {
         console.log(error);
