@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     category: DataTypes.STRING,
     price: DataTypes.DECIMAL,
     discount_id: DataTypes.INTEGER,
-    active: DataTypes.BOOLEAN,
     deletedAt: DataTypes.DATE
   }, {
     sequelize,

@@ -2,7 +2,6 @@ const { Op } = require("sequelize");
 const { Product } = require("../models");
 const { newResponse } = require("../utils/newResponse");
 const { uploadFile } = require("../services/aws-s3");
-const { validateFiles } = require("../middlewares/validateFiles");
 
 async function getProducts(req, res) {
     try {
@@ -118,7 +117,12 @@ async function editProduct(req, res) {
         const { name, desc, SKU, category, price, discount_id } = req.body;
         const image = req.files ? req.files.image : null;
 
-        const editableProduct = await Product.findByPk(id);
+        const product = await Product.findByPk(id);
+
+        if (!product) {
+            return newResponse(res, 400, 'This product does not exist')
+        }
+
         const compareProduct = await Product.findOne({
             where: {
                 [Op.or]: [
@@ -128,26 +132,61 @@ async function editProduct(req, res) {
             }
         })
 
-        if (!editableProduct) {
-            return newResponse(res, 400, 'This product does not exist.')
-        }
-
-        if (compareProduct.id != id) {
+        if (compareProduct && compareProduct.id != id) {
             return newResponse(res, 400, 'A product with this name or SKU already exists')
         }
 
-        if (name) editableProduct.name = name;
-        if (desc) editableProduct.desc = desc;
-        if (SKU) editableProduct.SKU = SKU;
-        if (category) editableProduct.category = category;
-        if (price) editableProduct.price = price;
-        if (discount_id) editableProduct.discount_id = discount_id;
-        if (image) editableProduct.image = await uploadFile(image);
+        product.name = name || product.name;
+        product.desc = desc || product.desc;
+        product.SKU = SKU || product.SKU;
+        product.category = category || product.category;
+        product.price = price || product.price;
+        product.discount_id = discount_id || product.discount_id;
+        product.image = image ? await uploadFile(image) : product.image;
 
-
-        editableProduct.save();
+        product.save();
 
         return newResponse(res, 200, 'Product updated.')
+    } catch (error) {
+        console.log(error);
+        return newResponse(res, 500, 'Server side error');
+    }
+}
+
+async function deleteProduct(req, res) {
+    try {
+        const { id } = req.params;
+        const { harddelete } = req.query;
+
+        const product = await Product.findOne({ where: { id } });
+
+        if (!product) {
+            return newResponse(res, 400, 'This product does not exist');
+        }
+
+        if (harddelete) {
+            await product.destroy({ force: true });
+            return newResponse(res, 200, 'Product has been hard deleted');
+        }
+
+        await product.destroy();
+        await product.save();
+
+        return newResponse(res, 200, 'Product has been soft deleted');
+    } catch (error) {
+        console.log(error);
+        return newResponse(res, 500, 'Server side error');
+    }
+}
+
+async function restoreProduct(req, res) {
+    try {
+        const { id } = req.params;
+        const product = await Product.restore({ where: { id } });
+
+        if (!product) return newResponse(res, 400, 'This product does not exist');
+
+        return newResponse(res, 200, 'Product restored')
     } catch (error) {
         console.log(error);
         return newResponse(res, 500, 'Server side error');
@@ -158,5 +197,7 @@ module.exports = {
     getProducts,
     getProductsByQuery,
     addProduct,
-    editProduct
+    editProduct,
+    deleteProduct,
+    restoreProduct
 }

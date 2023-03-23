@@ -31,11 +31,8 @@ module.exports = {
       discount_id: {
         type: Sequelize.INTEGER
       },
-      active: {
-        type: Sequelize.BOOLEAN
-      },
       deletedAt: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,
