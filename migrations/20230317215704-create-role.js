@@ -15,6 +15,9 @@ module.exports = {
       desc: {
         type: Sequelize.STRING
       },
+      permission_lvl: {
+        type: Sequelize.INTEGER
+      },
       deletedAt: {
         type: Sequelize.DATE
       },

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Role.init({
     name: DataTypes.STRING,
     desc: DataTypes.STRING,
+    permission_lvl: DataTypes.INTEGER,
     deletedAt: DataTypes.DATE
   }, {
     sequelize,
