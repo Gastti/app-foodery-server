@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check, param } = require('express-validator');
 const { isAuthenticated, validateFields } = require('../middlewares');
-const { getProducts, getProductsByQuery, addProduct, editProduct, deleteProduct, restoreProduct } = require('../controllers/product_controllers');
+const { getProducts, getProductsByQuery, getPopularProducts, addProduct, editProduct, deleteProduct, restoreProduct } = require('../controllers/product_controllers');
 const { validateFiles } = require('../middlewares/validateFiles');
 const { hasPermissions } = require('../middlewares/hasPermissions');
 const router = Router();
@@ -14,13 +14,15 @@ router.get('/', [
         .isNumeric().withMessage('The field must be an integer'),
 ], getProducts);
 
-router.get('/search', [
-    check(['name', 'category'])
+router.get('/search', getProductsByQuery);
+
+router.get('/popular', [
+    check(['limit'])
         .optional()
-        .isString().withMessage('The field must be a string')
         .trim()
-        .escape(),
-], getProductsByQuery);
+        .escape()
+        .isNumeric().withMessage('The field must be an integer'),
+], getPopularProducts)
 
 router.post('/add', [
     isAuthenticated,

@@ -80,6 +80,22 @@ async function getProductsByQuery(req, res) {
     }
 }
 
+async function getPopularProducts(req, res) {
+    try {
+        const products = await Product.findAll({
+            limit: 5,
+            order: [
+                ['total_sold', 'DESC']
+            ]
+        })
+
+        return newResponse(res, 200, 'Products found', products);
+    } catch (error) {
+        console.log(error);
+        return newResponse(res, 500, 'Server side error');
+    }
+}
+
 async function addProduct(req, res) {
     try {
         const { name, desc, SKU, category, price, discount_id } = req.body;
@@ -196,6 +212,7 @@ async function restoreProduct(req, res) {
 module.exports = {
     getProducts,
     getProductsByQuery,
+    getPopularProducts,
     addProduct,
     editProduct,
     deleteProduct,
