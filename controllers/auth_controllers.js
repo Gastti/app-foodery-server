@@ -11,13 +11,14 @@ async function register(req, res) {
             email, password
         } = req.body;
 
+        const image = 'https://foodery-product-images.s3.sa-east-1.amazonaws.com/1679610427588-avatar.png'
         // Encrypt Password 
         const salt = bcryptjs.genSaltSync(15);
         password = bcryptjs.hashSync(password, salt);
 
         await User.create({
             first_name, last_name, username,
-            email, password, role_id: 4
+            email, password, role_id: 4, image
         });
 
         return newResponse(res, 200, 'The user has been registered');
