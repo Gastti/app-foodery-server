@@ -36,6 +36,24 @@ async function getProducts(req, res) {
     }
 }
 
+async function getProductById(req, res) {
+    try {
+        const { id } = req.params;
+
+        const product = await Product.findByPk(id, {
+            attributes: {
+                exclude: ['deletedAt', 'createdAt', 'updatedAt']
+            }
+        });
+        if (!product) return newResponse(res, 404, 'Product not found');
+
+        return newResponse(res, 200, 'Product found', product);
+    } catch (error) {
+        console.log(error);
+        return newResponse(res, 500, 'Server side error');
+    }
+}
+
 async function getProductsByQuery(req, res) {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -83,7 +101,7 @@ async function getProductsByQuery(req, res) {
 async function getPopularProducts(req, res) {
     try {
         const products = await Product.findAll({
-            limit: 5,
+            limit: 9,
             order: [
                 ['total_sold', 'DESC']
             ]
@@ -211,6 +229,7 @@ async function restoreProduct(req, res) {
 
 module.exports = {
     getProducts,
+    getProductById,
     getProductsByQuery,
     getPopularProducts,
     addProduct,
