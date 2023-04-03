@@ -19,32 +19,37 @@ async function generateCart(user_id) {
 }
 
 async function getCart(req, res) {
-    const { user_id } = req.authenticatedUser;
+    try {
+        const { user_id } = req.authenticatedUser;
 
-    const cart = await Cart.findOne({
-        where: { user_id },
-        attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
-        include: {
-            model: Cart_Item,
-            as: 'cart_items',
-            attributes: ['id', 'quantity'],
+        const cart = await Cart.findOne({
+            where: { user_id },
+            attributes: { exclude: ['deletedAt', 'createdAt', 'updatedAt'] },
             include: {
-                model: Product,
-                as: 'product',
-                attributes: { exclude: ['discount_id', 'deletedAt', 'createdAt', 'updatedAt'] },
+                model: Cart_Item,
+                as: 'cart_items',
+                attributes: ['id', 'quantity'],
                 include: {
-                    model: Discount,
-                    as: 'discount_coupon'
+                    model: Product,
+                    as: 'product',
+                    attributes: { exclude: ['discount_id', 'deletedAt', 'createdAt', 'updatedAt'] },
+                    include: {
+                        model: Discount,
+                        as: 'discount_coupon'
+                    }
                 }
             }
-        }
-    });
+        });
 
-    if (!cart) return newResponse(res, 404, "Can't find this cart");
+        if (!cart) return newResponse(res, 404, "Can't find this cart");
 
-    cart.total = cart.cart_items.length;
-    console.log('CARGA EN EL SERVIDOR');
-    return newResponse(res, 200, 'Cart found', cart);
+        cart.total = cart.cart_items.length;
+
+        return newResponse(res, 200, 'Cart found', cart);
+    } catch (error) {
+        console.log(error);
+        return newResponse(res, 500, 'Server side error');
+    }
 }
 
 module.exports = {
