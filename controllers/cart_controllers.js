@@ -43,7 +43,7 @@ async function getCart(req, res) {
     if (!cart) return newResponse(res, 404, "Can't find this cart");
 
     cart.total = cart.cart_items.length;
-
+    console.log('CARGA EN EL SERVIDOR');
     return newResponse(res, 200, 'Cart found', cart);
 }
 
